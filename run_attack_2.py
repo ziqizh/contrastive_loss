@@ -21,7 +21,7 @@ from art.utils import load_mnist
 from tensorflow.keras import Model
 from tensorflow.keras.layers import Dense, Flatten, Conv2D, MaxPool2D
 
-from model import *
+from model_2 import *
 import losses
 
 SEED = 42
@@ -218,21 +218,22 @@ def main():
     elif args.data == 'fashion_mnist':
         mnist = tf.keras.datasets.fashion_mnist
     print('Loading {} data...'.format(args.data))
-    (x_train, y_train), (x_test, y_test) = mnist.load_data()
-    x_train, x_test = x_train / 255.0, x_test / 255.0
-    x_train = x_train.reshape(-1, 28*28).astype(np.float32)
-    x_test = x_test.reshape(-1, 28*28).astype(np.float32)
-    # (x_train, y_train), (x_test, y_test), min_pixel_value, max_pixel_value = load_mnist()
+    (_, y_train), (_, y_test) = mnist.load_data()
+    # x_train, x_test = x_train / 255.0, x_test / 255.0
+    # x_train = x_train.reshape(-1, 28*28).astype(np.float32)
+    # x_test = x_test.reshape(-1, 28*28).astype(np.float32)
+    (x_train, _), (x_test, _), _, _ = load_mnist()
+    # print(x_train[0][0])
     print(x_train.shape, x_test.shape)
 
     # simulate low data regime for training
-    n_train = x_train.shape[0]
-    shuffle_idx = np.arange(n_train)
-    np.random.shuffle(shuffle_idx)
+    # n_train = x_train.shape[0]
+    # shuffle_idx = np.arange(n_train)
+    # np.random.shuffle(shuffle_idx)
 
-    x_train = x_train[shuffle_idx][:args.n_data_train]
-    y_train = y_train[shuffle_idx][:args.n_data_train]
-    print('Training dataset shapes after slicing:')
+    # x_train = x_train[shuffle_idx][:args.n_data_train]
+    # y_train = y_train[shuffle_idx][:args.n_data_train]
+    # print('Training dataset shapes after slicing:')
     print(x_train.shape, y_train.shape)
 
     train_ds = tf.data.Dataset.from_tensor_slices(
@@ -276,7 +277,7 @@ def main():
         with tf.GradientTape() as tape:
             r = encoder(x, training=True)
             z = projector(r, training=True)
-            print()
+            # print("z", z, "y", y)
             loss = loss_func(z, y)
 
         gradients = tape.gradient(loss,
